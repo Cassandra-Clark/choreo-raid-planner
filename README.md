@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+## Scripts
+Common scripts are defined in `package.json`:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- `dev` — Start development server
+- `build` — Type-check and build for production
+- `lint` — Run ESLint
+- `preview` — Preview production build
 
-Currently, two official plugins are available:
+Add test scripts if/when tests are added.
+## Testing
+No test files are currently present. For future tests, use a `__tests__/` folder or colocate test files (e.g., `Component.test.tsx`) with source files.
+## Type Definitions
+If `src/types.ts` grows large, consider splitting types into a `src/types/` directory for better organization.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+# Raid Planner
 
-## React Compiler
+WoW raid cooldown planning tool. Import a WoW combat log, visualize boss ability timelines, and assign player cooldowns. Share plans via URL or JSON.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
+- Import WoW combat logs (.txt)
+- Visual timeline of boss abilities and player cooldowns
+- Drag-and-drop cooldown assignment
+- Share plans via URL or export/import JSON
+- LocalStorage persistence
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+2. **Start development server:**
+   ```sh
+   npm run dev
+   ```
+3. **Build for production:**
+   ```sh
+   npm run build
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Project Structure
+See [CLAUDE.md](CLAUDE.md) for detailed project context, stack, and architecture.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Contributing
+- Fork and clone the repo
+- Create feature branches for changes
+- Run `npm run lint` before submitting PRs
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## License
+MIT
