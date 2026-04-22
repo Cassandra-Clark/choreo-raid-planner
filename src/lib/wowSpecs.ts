@@ -85,3 +85,7 @@ export const SPECS: Record<number, SpecInfo> = {
 export function specIconUrl(iconName: string): string {
   return `https://wow.zamimg.com/images/wow/icons/medium/${iconName}.jpg`;
 }
+
+export function spellIconUrl(iconName: string, size: 'small' | 'medium' = 'small'): string {
+  return `https://wow.zamimg.com/images/wow/icons/${size}/${iconName}.jpg`;
+}

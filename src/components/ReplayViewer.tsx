@@ -1,6 +1,8 @@
 import { useRef, useEffect, useCallback, useState } from 'react';
 import { useReplayStore } from '../store/replayStore';
+import { usePlanStore } from '../store/planStore';
 import { SPECS, CLASS_COLORS, specIconUrl, type Role } from '../lib/wowSpecs';
+import { COOLDOWNS, CLASS_COLORS as WOW_CLASS_COLORS } from '../lib/cooldowns';
 import type { ReplayData, ReplayUnit, PositionSample } from '../types';
 
 const CANVAS_H = 300;
@@ -111,6 +113,7 @@ function draw(
   t: number,
   hiddenGuids: string[],
   showNames: boolean,
+  playerColorMap: Map<string, string>,
   onIconLoad: () => void,
 ) {
   const w = ctx.canvas.width, h = ctx.canvas.height;
@@ -157,7 +160,9 @@ function draw(
     const [ux, uy] = toCanvas(pos.x, pos.y);
 
     const spec = unit.specId ? SPECS[unit.specId] : undefined;
-    const color = spec ? spec.color : (unit.isPlayer ? '#94a3b8' : CLASS_COLORS.NPC);
+    const color = spec
+      ? spec.color
+      : (unit.isPlayer ? (playerColorMap.get(unit.name) ?? '#94a3b8') : CLASS_COLORS.NPC);
     const r = unit.isPlayer ? PLAYER_R : NPC_R;
 
     // Facing line for players
@@ -200,6 +205,7 @@ const ROLE_COLORS: Record<Role, string> = {
 
 export function ReplayViewer() {
   const replayData    = useReplayStore(s => s.replayData);
+  const cdRows        = usePlanStore(s => s.plan.cdRows);
   const currentTime   = useReplayStore(s => s.currentTime);
   const setCurrentTime = useReplayStore(s => s.setCurrentTime);
   const playing       = useReplayStore(s => s.playing);
@@ -234,13 +240,22 @@ export function ReplayViewer() {
         .map(u => u.guid)
     : [];
 
+  // Build playerName → class color from CD rows as fallback when specId is unknown
+  const playerColorMap = new Map<string, string>();
+  for (const row of cdRows) {
+    if (!playerColorMap.has(row.playerName)) {
+      const cd = COOLDOWNS[row.cooldownKey];
+      if (cd) playerColorMap.set(row.playerName, WOW_CLASS_COLORS[cd.class]);
+    }
+  }
+
   const redraw = useCallback((t: number) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (canvas && ctx && replayData) {
-      draw(ctx, replayData, t, effectiveHiddenGuids, showNames, () => redraw(playTimeRef.current));
+      draw(ctx, replayData, t, effectiveHiddenGuids, showNames, playerColorMap, () => redraw(playTimeRef.current));
     }
-  }, [replayData, effectiveHiddenGuids, showNames]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [replayData, effectiveHiddenGuids, showNames, playerColorMap]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Redraw when paused
   useEffect(() => {

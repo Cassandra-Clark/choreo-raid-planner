@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { usePlanStore } from '../store/planStore';
 import { COOLDOWNS, CLASS_COLORS, type WowClass } from '../lib/cooldowns';
 import { parseLog, parseReplayData } from '../lib/logParser';
+import { spellIconUrl } from '../lib/wowSpecs';
 import { useReplayStore } from '../store/replayStore';
 import type { ParsedFight } from '../types';
 
@@ -59,8 +60,12 @@ export function Sidebar() {
   function handleImportFight(fight: ParsedFight, idx: number) {
     importFight(fight);
     setReplayTime(0);
-    const replay = parseReplayData(logTextRef.current, idx);
-    setReplayData(replay);
+    setFights([]);
+    // Defer heavy replay parsing so React can render the boss abilities first
+    setTimeout(() => {
+      const replay = parseReplayData(logTextRef.current, idx);
+      setReplayData(replay);
+    }, 0);
   }
 
   return (
@@ -181,7 +186,20 @@ function CDTab({ selectedClass, setSelectedClass, filteredCDs, playerName, setPl
             }}
             title={`CD: ${cd.cooldown}s · Duration: ${cd.duration}s`}
           >
-            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: cd.color }} />
+            <div className="relative shrink-0 w-6 h-6">
+              <img
+                src={spellIconUrl(cd.iconName)}
+                alt=""
+                className="w-6 h-6 rounded object-cover"
+                style={{ outline: `1.5px solid ${cd.color}40` }}
+                onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+              />
+              <div
+                className="absolute inset-0 rounded hidden"
+                style={{ background: cd.color }}
+                aria-hidden="true"
+              />
+            </div>
             <div className="flex-1 min-w-0">
               <div className="text-xs text-white/80 truncate">{cd.name}</div>
               <div className="text-[10px] text-white/30">{cd.cooldown}s CD · {cd.duration}s</div>

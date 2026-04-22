@@ -2,6 +2,7 @@ import { useRef, useCallback, useState } from 'react';
 import { usePlanStore } from '../store/planStore';
 import { useReplayStore } from '../store/replayStore';
 import { COOLDOWNS } from '../lib/cooldowns';
+import { spellIconUrl } from '../lib/wowSpecs';
 import type { CooldownRow, BossAbility } from '../types';
 
 const PX_PER_SECOND = 8;
@@ -197,7 +198,19 @@ export function Timeline() {
                   className="flex items-center gap-1.5 px-2 border-r border-white/10 shrink-0"
                   style={{ width: LABEL_W }}
                 >
-                  <div className="w-2 h-2 rounded-full shrink-0" style={{ background: cd.color }} />
+                  <img
+                    src={spellIconUrl(cd.iconName)}
+                    alt=""
+                    className="w-5 h-5 rounded shrink-0 object-cover"
+                    style={{ outline: `1px solid ${cd.color}50` }}
+                    onError={e => {
+                      const el = e.currentTarget as HTMLImageElement;
+                      el.style.display = 'none';
+                      const dot = el.nextElementSibling as HTMLElement | null;
+                      if (dot) dot.style.display = 'block';
+                    }}
+                  />
+                  <div className="w-2 h-2 rounded-full shrink-0 hidden" style={{ background: cd.color }} />
                   <span className="text-xs text-white/70 truncate">{row.playerName}</span>
                   <span className="text-[10px] text-white/30 truncate">{cd.name}</span>
                   <button
